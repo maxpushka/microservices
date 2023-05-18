@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrations
+          image: your-docker-registry/migrations:v1
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: your-db-name
+            - name: DB_USER
+              value: your-db-username
+            - name: DB_PASSWORD
+              value: your-db-password
+            - name: MIGRATIONS_PATH
+              value: /migrations.sql
+          volumeMounts:
+            - name: migrations-volume
+              mountPath: /migrations.sql
+      restartPolicy: Never
+      volumes:
+        - name: migrations-volume
+          configMap:
+            name: migrations-configmap
+            items:
+              - key: migrations.sql
+                path: migrations.sql
+  backoffLimit: 4
