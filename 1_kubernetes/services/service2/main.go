@@ -17,7 +17,7 @@ func greetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/greet", greetHandler)
+	http.HandleFunc("/", greetHandler)
 
 	fmt.Println("Starting server on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

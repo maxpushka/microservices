@@ -5,6 +5,7 @@ FROM golang:1.16-alpine
 WORKDIR /app
 
 # Copy the source code into the container
+COPY go.mod .
 COPY main.go .
 
 # Build the Go application

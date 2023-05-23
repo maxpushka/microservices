@@ -7,7 +7,7 @@ import (
 )
 
 func TestGreetHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/greet?name=John", nil)
+	req, err := http.NewRequest("GET", "/?name=John", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func TestGreetHandler(t *testing.T) {
 }
 
 func TestGreetHandlerNoName(t *testing.T) {
-	req, err := http.NewRequest("GET", "/greet", nil)
+	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
