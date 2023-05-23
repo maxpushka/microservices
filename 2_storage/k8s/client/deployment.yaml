@@ -13,7 +13,7 @@ spec:
        app: client
     spec:
       containers:
-        - image: client:latest
+        - image: client:0.2
           imagePullPolicy: Never
           name: client
           ports:
