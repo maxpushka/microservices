@@ -13,13 +13,17 @@ spec:
         app: service1               # мітка Pod по якому вона буде зв'язана з Deployment та Service
     spec:
       initContainers:
+        - name: create-db1
+          image: postgres:14.1-alpine3.15
+          imagePullPolicy: "IfNotPresent"
+          command: ["psql", "postgres://postgres:postgres@postgres.default:5432/?sslmode=disable", "-c", "CREATE DATABASE demo1", "2>/dev/null"]
         - name: run-migrations1
           image: service1-migrations:0.2
           imagePullPolicy: Never
           command: ["migrate", "-path", "/migrations", "-database",  "$(POSTGRESQL_URL)", "up"]
           env:
             - name: POSTGRESQL_URL
-              value: "postgres://postgres:postgres@postgres.default:5432/demo?sslmode=disable"
+              value: "postgres://postgres:postgres@postgres.default:5432/demo1?sslmode=disable"
       containers:
         - image: service1:0.2      # образ Docker
           name: service1           # ім'я контейнера

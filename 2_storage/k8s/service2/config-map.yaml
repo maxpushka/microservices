@@ -5,4 +5,4 @@ metadata:
 data:
   DB_HOST: postgres.default
   DB_PORT: "5432"
-  DB_NAME: demo
+  DB_NAME: demo2

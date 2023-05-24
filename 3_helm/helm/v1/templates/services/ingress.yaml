@@ -1,0 +1,29 @@
+{{- $defaults := . -}}
+
+{{- range $index, $value := .Values.services }}
+{{- $_ := set $value "nameOverride" $index }}
+{{- $microservice := dict "Values" $value }}
+{{- $defaultsCopy := $defaults | deepCopy }}
+{{- with mergeOverwrite $defaultsCopy $microservice }}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-{{ $value.serviceName }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-{{ $value.serviceName }}-service
+                port:
+                  number: 80
+
+{{ end }}
+{{ end }}

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-deployment
+  name: {{ .Release.Name }}-client-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: {{ .Release.Name }}-client
   template:
     metadata:
-     labels:
-       app: client
+      labels:
+        app: {{ .Release.Name }}-client
     spec:
       containers:
-        - image: client:latest
+        - name: client
+          image: {{ .Values.clientImage }}
           imagePullPolicy: Never
-          name: client
           ports:
             - containerPort: 80

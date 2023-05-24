@@ -1,0 +1,20 @@
+{{- $defaults := . -}}
+
+{{- range $index, $value := .Values.services }}
+{{- $_ := set $value "nameOverride" $index }}
+{{- $microservice := dict "Values" $value }}
+{{- $defaultsCopy := $defaults | deepCopy }}
+{{- with mergeOverwrite $defaultsCopy $microservice }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ $value.serviceName }}-config
+data:
+  DB_HOST: "{{ .Values.postgresql.fullnameOverride }}"
+  DB_PORT: "5432"
+  DB_NAME: "{{ $value.serviceName }}"
+
+{{ end }}
+{{ end }}
