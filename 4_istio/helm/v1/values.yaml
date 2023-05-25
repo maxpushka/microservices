@@ -1,11 +1,12 @@
-clientImage: client:0.3
+clientImage: client:0.4
 
 postgresql:
   global:
     postgresql:
       auth:
+          enablePostgresUser: true
           postgresPassword: "demo"
-          username: "demo"
+          username: "postgres"
           password: "demo"
           database: "demo"
   fullnameOverride: "postgres"
@@ -17,9 +18,11 @@ postgresql:
 services:
   service1:
     serviceName: service1
-    appImage: service1:0.3
-    migrationsImage: service1-migrations:0.3
+    appImage: service1:0.4
+    migrationsImage: service1-migrations:0.4
+    helperService: service2
   service2:
     serviceName: service2
-    appImage: service2:0.3
-    migrationsImage: service2-migrations:0.3
+    appImage: service2:0.4
+    migrationsImage: service2-migrations:0.4
+    helperService: service1

@@ -1,4 +1,4 @@
-# Lab 1: Kubernetes
+# Lab 3: Kubernetes
 
 ## How to start
 

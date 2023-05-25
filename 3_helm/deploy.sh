@@ -1,13 +1,19 @@
 #!/bin/bash
 
 # Build containers
-docker build -f Dockerfile            -t service1:0.3            ./services/service1
-docker build -f migrations/Dockerfile -t service1-migrations:0.3 ./services/service1
+cd ./services/service1
+docker build -f Dockerfile            -t service1:0.3            .
+docker build -f migrations/Dockerfile -t service1-migrations:0.3 .
+cd -
 
-docker build -f Dockerfile            -t service2:0.3            ./services/service2
-docker build -f migrations/Dockerfile -t service2-migrations:0.3 ./services/service2
+cd ./services/service2
+docker build -f Dockerfile            -t service2:0.3            .
+docker build -f migrations/Dockerfile -t service2-migrations:0.3 .
+cd -
 
-docker build -f Dockerfile -t client:0.3 ./client
+cd ./client
+docker build -f Dockerfile -t client:0.3 .
+cd -
 
 # Check if Minikube is running
 if ! minikube status &> /dev/null; then

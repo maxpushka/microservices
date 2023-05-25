@@ -1,0 +1,23 @@
+{{- $defaults := . -}}
+
+{{- range $index, $value := .Values.services }}
+{{- $_ := set $value "nameOverride" $index }}
+{{- $microservice := dict "Values" $value }}
+{{- $defaultsCopy := $defaults | deepCopy }}
+{{- with mergeOverwrite $defaultsCopy $microservice }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ $value.serviceName }}-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: {{ .Release.Name }}-{{ $value.serviceName }}
+
+{{ end }}
+{{ end }}

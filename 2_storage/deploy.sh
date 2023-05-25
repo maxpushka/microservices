@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Build containers
+# Build containers
 cd ./services/service1
 docker build -f Dockerfile            -t service1:0.2            .
 docker build -f migrations/Dockerfile -t service1-migrations:0.2 .

@@ -1,0 +1,55 @@
+{{- $defaults := . -}}
+
+{{- range $index, $value := .Values.services }}
+{{- $_ := set $value "nameOverride" $index }}
+{{- $microservice := dict "Values" $value }}
+{{- $defaultsCopy := $defaults | deepCopy }}
+{{- with mergeOverwrite $defaultsCopy $microservice }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ $value.serviceName }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ $value.serviceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ $value.serviceName }}
+    spec:
+      initContainers:
+        - name: wait-for-database
+          image: busybox
+          command: ['sh', '-c', 'until nc -zv postgres.default 5432; do sleep 1; done']
+        - name: create-db
+          image: postgres:14.1-alpine3.15
+          imagePullPolicy: "IfNotPresent"
+          command: ["psql", "$(POSTGRESQL_URL)", "-c", "CREATE DATABASE {{ $value.serviceName }}", "2>/dev/null"]
+          env:
+            - name: POSTGRESQL_URL
+              value: "postgres://postgres:demo@postgres:5432/?sslmode=disable"
+        - name: run-migrations-{{ $value.serviceName }}
+          image: {{ $value.migrationsImage }}
+          imagePullPolicy: Never
+          command: [ "migrate", "-path", "/migrations", "-database", "$(POSTGRESQL_URL)" , "up" ]
+          env:
+            - name: POSTGRESQL_URL
+              value: "postgres://postgres:demo@postgres:5432/{{ $value.serviceName }}?sslmode=disable"
+      containers:
+        - name: {{ $value.serviceName }}
+          image: {{ $value.appImage }}
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-{{ $value.serviceName }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-{{ $value.serviceName }}-secret
+
+{{ end }}
+{{ end }}
