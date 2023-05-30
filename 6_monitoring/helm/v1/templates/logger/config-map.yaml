@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logger-config
+data:
+  KAFKA_HOST: "{{ .Values.kafka.fullnameOverride }}:9092"
+  KAFKA_TOPIC_1: "{{ .Values.services.service1.kafkaTopic }}"
+  KAFKA_TOPIC_2: "{{ .Values.services.service2.kafkaTopic }}"

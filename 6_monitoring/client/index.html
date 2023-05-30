@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div id="root"></div>
+</body>
+<!-- This setup is not suitable for production. -->
+<!-- Only use it in development! -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react?dev",
+    "react-dom/client": "https://esm.sh/react-dom/client?dev"
+  }
+}
+</script>
+<script type="text/babel" data-type="module">
+  import React, { StrictMode, useEffect, useState } from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  const baseURL = 'http://localhost:8001/api/v1/namespaces/default/services';
+
+  async function getUsers() {
+    try {
+      const response = await fetch(`${baseURL}/service1-service/proxy/users`);
+      if (response.ok) {
+        const users = await response.json();
+        return users;
+      } else {
+        console.error('Failed to fetch users');
+      }
+    } catch (error) {
+    }
+  }
+
+  async function createUser(user) {
+    try {
+      const response = await fetch(`${baseURL}/service1-service/proxy/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+      if (response.ok) {
+        const createdUser = await response.json();
+        console.log(createdUser);
+      } else {
+        console.error('Failed to create user');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function getProducts() {
+    try {
+      const response = await fetch(`${baseURL}/service2-service/proxy/products`);
+      if (response.ok) {
+        const products = await response.json();
+        return products;
+      } else {
+        console.error('Failed to fetch products');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function createProduct(product) {
+    try {
+      const response = await fetch(`${baseURL}/service2-service/proxy/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
+      if (response.ok) {
+        const createdProduct = await response.json();
+        console.log(createdProduct);
+      } else {
+        console.error('Failed to create product');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  let App = function App() {
+    const [usersStatus, setUsersStatus] = useState('');
+    const [productsStatus, setProductsStatus] = useState('');
+
+    useEffect(() => {
+      const checkServices = async () => {
+        try {
+          const usersResponse = await getUsers();
+          if (usersResponse) {
+              setUsersStatus(JSON.stringify(usersResponse));
+          }
+
+          const productsResponse = await getProducts();
+          if (productsResponse) {
+            setProductsStatus(productsResponse);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      checkServices();
+    }, []);
+
+    useEffect(() => {
+      getUsers();
+      createProduct({
+        name: 'Sample Product',
+        price: 10,
+      });
+    }, []);
+
+    return (
+      <div>
+        <h1>Service Pinger</h1>
+        <div>
+          <h2>Users service status: {usersStatus ? 'online' : 'offline'}</h2>
+          <span>{JSON.stringify(usersStatus)}</span>
+          <h2>Products service status: {productsStatus ? 'online' : 'offline'}</h2>
+          <span>{JSON.stringify(productsStatus)}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const root = createRoot(document.getElementById('root'));
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: sans-serif;
+    margin: 20px;
+    padding: 0;
+  }
+
+  h1 {
+    margin-top: 0;
+    font-size: 22px;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-size: 20px;
+  }
+
+  h3 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+  h4 {
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  h5 {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  h6 {
+    margin-top: 0;
+    font-size: 12px;
+  }
+
+  code {
+    font-size: 1.2em;
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+</style>
+
+</html>

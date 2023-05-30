@@ -1,0 +1,43 @@
+clientImage: client:0.6
+
+postgresql:
+  global:
+    postgresql:
+      auth:
+        enablePostgresUser: true
+        postgresPassword: "demo"
+        username: "postgres"
+        password: "demo"
+        database: "demo"
+  fullnameOverride: "postgres"
+  primary:
+    persistence:
+      mountPath: /var/lib/postgresql/data
+      size: 2Gi
+
+kafka:
+  fullnameOverride: kafka # ім'я сервісу (хост по якому можна звертатись до брокера)
+  numPartitions: 3 # кількість розділів визначає скільки консьюмерів може бути в топіка одночасно
+  autoCreateTopicsEnable: false # заборонити автоматичне створення топіків, вони мають визначатись явно, в списку нижче
+  provisioning:
+    enabled: true # при запуску будуть створені перелічені топіки
+    topics:
+      - name: service1_logs
+      - name: service2_logs
+
+logger:
+  image: logger:0.6
+
+services:
+  service1:
+    serviceName: service1
+    appImage: service1:0.6
+    migrationsImage: service1-migrations:0.6
+    helperService: service2
+    kafkaTopic: "service1_logs"
+  service2:
+    serviceName: service2
+    appImage: service2:0.6
+    migrationsImage: service2-migrations:0.6
+    helperService: service1
+    kafkaTopic: "service2_logs"
